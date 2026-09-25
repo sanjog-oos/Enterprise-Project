@@ -16,6 +16,39 @@ app.use(express.json());
 const FRONTEND = path.join(__dirname, '..', 'index');
 app.use(express.static(FRONTEND));
 
+// ---------- DB CONNECTION (must come BEFORE routes) ----------
+const MONGO_URI = process.env.MONGO_URI;
+
+let cached = global.mongoose;
+if (!cached) cached = global.mongoose = { conn: null, promise: null };
+
+async function connectDB() {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      maxPoolSize: 10,
+      bufferCommands: false,
+    });
+  }
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
+
+// Middleware to ensure DB is connected before any /api route
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('❌  MongoDB connection error:', err.message);
+    return res.status(500).json({ message: 'Database connection failed' });
+  }
+});
+// -------------------------------------------------------------
+
 app.use('/api/auth',  authRoutes);
 app.use('/api/game',  gameRoutes);
 app.use('/api/admin', adminRoutes);
@@ -28,27 +61,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(FRONTEND, 'index.html'));
 });
 
-const PORT      = process.env.PORT      || 5000;
-const MONGO_URI = process.env.MONGO_URI;
-
-let isConnected = false;
-
-async function connectDB() {
-  if (isConnected) return;
-  await mongoose.connect(MONGO_URI);
-  isConnected = true;
-  console.log('✅  MongoDB connected');
-}
-
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (err) {
-    console.error('❌  MongoDB connection error:', err.message);
-    res.status(500).json({ message: 'Database connection failed' });
-  }
-});
+const PORT = process.env.PORT || 5000;
 
 if (process.env.VERCEL) {
   module.exports = app;
