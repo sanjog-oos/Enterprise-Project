@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberAwareness 360° — Social Engineering Call Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="loading"><div class="spin"></div><div class="lbl">Loading the pod...</div></div>
+
+<div id="authScreen" class="auth-shell">
+  <div class="auth-card">
+      <div class="demo-banner">
+        <button class="demo-play-btn" id="demoPlayBtn" type="button">
+          ⚡ Instant Demo Play <span class="demo-tag">Guest / Examiner Mode</span>
+        </button>
+        <div class="demo-note">No login required · scores not saved to database</div>
+      </div>
+    <div class="auth-brand">
+      <div class="brand-mark">CA</div>
+      <div>
+        <div class="brand-text">CyberAwareness</div>
+        <div class="brand-sub">Access Portal</div>
+      </div>
+    </div>
+
+    <div class="auth-tabs" aria-label="Authentication tabs">
+      <button class="auth-tab active" type="button" data-auth-tab="login">Login</button>
+      <button class="auth-tab" type="button" data-auth-tab="register">Register</button>
+    </div>
+
+    <div id="loginPane" class="auth-pane active">
+      <form id="loginForm" class="auth-form">
+        <label>
+          <span>Email</span>
+          <input type="email" id="loginEmail" placeholder="you@company.com" required>
+        </label>
+        <label>
+          <span>Password</span>
+          <input type="password" id="loginPassword" placeholder="Enter password" required>
+        </label>
+        <button type="submit" class="primary-btn">Enter training pod</button>
+      </form>
+    </div>
+
+    <div id="registerPane" class="auth-pane">
+      <form id="registerForm" class="auth-form">
+        <label>
+          <span>Full name</span>
+          <input type="text" id="regName" placeholder="Player name" required>
+        </label>
+        <label>
+          <span>Email</span>
+          <input type="email" id="regEmail" placeholder="new.player@company.com" required>
+        </label>
+        <label>
+          <span>Password</span>
+          <input type="password" id="regPassword" placeholder="Create password" required>
+        </label>
+        <label>
+          <span>Role</span>
+          <select id="regRole">
+            <option value="user">Player</option>
+          </select>
+        </label>
+        <button type="submit" class="primary-btn">Create player account</button>
+      </form>
+    </div>
+
+    <div class="auth-note">
+      <strong>Admin access:</strong> admin@cyberawareness.local / admin123
+    </div>
+    <div id="authMessage" class="auth-message"></div>
+  </div>
+</div>
+
+<div id="homeScreen" class="lobby-shell" style="display:none;">
+
+  <!-- TOP NAV -->
+  <nav class="lobby-nav">
+    <div class="lobby-brand">
+      <div class="brand-mark">CA</div>
+      <div>
+        <div class="brand-text">CyberAwareness</div>
+        <div class="brand-sub">Training Platform</div>
+      </div>
+    </div>
+    <div class="lobby-nav-right">
+      <!-- Player History dropdown -->
+      <div class="nav-history-wrap" id="navHistoryWrap">
+        <button class="nav-history-btn" id="navHistoryBtn" type="button">&#128203; History</button>
+        <div class="nav-history-panel" id="navHistoryPanel">
+          <div class="nav-history-title">Your Game History</div>
+          <div id="navHistoryList" class="nav-history-list">
+            <div class="nav-history-empty">No games played yet.</div>
+          </div>
+          <button class="nav-history-clear" id="navHistoryClear" type="button">Clear History</button>
+        </div>
+      </div>
+      <span id="roleBadge" class="role-badge">Player</span>
+      <div id="adminLinkWrap" hidden>
+        <a href="admin.html" class="lobby-admin-link">&#9881; Admin</a>
+      </div>
+      <button id="logoutBtn" class="lobby-logout-btn" type="button">Logout</button>
+    </div>
+  </nav>
+
+  <!-- MAIN LAYOUT -->
+  <div class="lobby-layout">
+
+    <!-- LEFT COLUMN -->
+    <div class="lobby-left">
+
+      <!-- Hero Start Game card -->
+      <div class="lobby-hero-card">
+        <div class="lobby-hero-glow"></div>
+        <div class="lobby-hero-content">
+          <div class="lobby-eyebrow">Welcome back,</div>
+          <h1 class="lobby-welcome" id="welcomeName">Agent</h1>
+          <p class="lobby-hero-desc">Train against real-world social engineering attacks. Each call tests a different manipulation technique. Stay sharp and verify everything.</p>
+          <div class="lobby-hero-btns">
+            <button id="launchGameBtn" class="lobby-start-btn" type="button">
+              <span class="lobby-start-icon">&#9654;</span>
+              <span>
+                <span class="lobby-start-label">START GAME</span>
+                <span class="lobby-start-sub">Enter the 360 training pod</span>
+              </span>
+            </button>
+            <button id="howToPlayBtn" class="lobby-secondary-btn" type="button">How to Play</button>
+            
+          </div>
+        </div>
+      </div>
+
+      <!-- Level Map -->
+      <div class="lobby-section">
+        <div class="lobby-section-header">
+          <span class="lobby-section-title">Level Progress</span>
+          <span class="lobby-section-sub" id="lobbyUnlockStatus">Level 1 unlocked</span>
+        </div>
+        <div class="lobby-level-map" id="lobbyLevelMap"></div>
+      </div>
+
+      <!-- Recent Games -->
+      <div class="lobby-section">
+        <div class="lobby-section-header">
+          <span class="lobby-section-title">Recent Games</span>
+        </div>
+        <div id="lobbyRecentGames" class="lobby-recent-list">
+          <div class="lobby-empty">No games played yet. Start your first call above.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="lobby-right">
+
+      <!-- Stats -->
+      <div class="lobby-section">
+        <div class="lobby-section-header">
+          <span class="lobby-section-title">Your Stats</span>
+        </div>
+        <div class="lobby-stats-grid">
+          <div class="lobby-stat-card">
+            <div class="lobby-stat-icon">&#127918;</div>
+            <div class="lobby-stat-val" id="statGames">0</div>
+            <div class="lobby-stat-lbl">Calls Played</div>
+          </div>
+          <div class="lobby-stat-card">
+            <div class="lobby-stat-icon">&#127919;</div>
+            <div class="lobby-stat-val green" id="statBest">&#8212;</div>
+            <div class="lobby-stat-lbl">Best Score</div>
+          </div>
+          <div class="lobby-stat-card">
+            <div class="lobby-stat-icon">&#128293;</div>
+            <div class="lobby-stat-val amber" id="statStreak">0</div>
+            <div class="lobby-stat-lbl">Safe Streak</div>
+          </div>
+          <div class="lobby-stat-card">
+            <div class="lobby-stat-icon">&#10003;</div>
+            <div class="lobby-stat-val green" id="statSafe">0</div>
+            <div class="lobby-stat-lbl">Safe Calls</div>
+          </div>
+          <div class="lobby-stat-card">
+            <div class="lobby-stat-icon">&#9888;</div>
+            <div class="lobby-stat-val amber" id="statRisk">0</div>
+            <div class="lobby-stat-lbl">Risky Calls</div>
+          </div>
+          <div class="lobby-stat-card">
+            <div class="lobby-stat-icon">&#128202;</div>
+            <div class="lobby-stat-val" id="statAvg">&#8212;</div>
+            <div class="lobby-stat-lbl">Avg Score</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="lobby-section">
+        <div class="lobby-section-header">
+          <span class="lobby-section-title">Top Players</span>
+        </div>
+        <div id="lobbyLeaderboard" class="lobby-lb-list">
+          <div class="lobby-empty">Loading...</div>
+        </div>
+      </div>
+
+      <!-- Security Tip -->
+      <div class="lobby-tip-card">
+        <div class="lobby-tip-title">Security Tip</div>
+        <div class="lobby-tip-text" id="lobbyTip">Loading...</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- HOW TO PLAY MODAL -->
+  <div id="howToPlayModal" class="htp-overlay" hidden>
+    <div class="htp-card">
+      <div class="htp-header">
+        <span class="htp-title">How to Play</span>
+        <button class="htp-close" id="htpClose" type="button">X</button>
+      </div>
+      <div class="htp-body">
+        <div class="htp-steps">
+          <div class="htp-step">
+            <div class="htp-step-num">1</div>
+            <div>
+              <div class="htp-step-title">Enter the 3D Office</div>
+              <div class="htp-step-desc">Use W A S D keys to move and drag to look around the 360 training pod. Your phone will ring soon.</div>
+            </div>
+          </div>
+          <div class="htp-step">
+            <div class="htp-step-num">2</div>
+            <div>
+              <div class="htp-step-title">Answer the Incoming Call</div>
+              <div class="htp-step-desc">Click the ringing phone on your desk. A social engineer will try to manipulate you into sharing sensitive information.</div>
+            </div>
+          </div>
+          <div class="htp-step">
+            <div class="htp-step-num">3</div>
+            <div>
+              <div class="htp-step-title">Choose Your Response</div>
+              <div class="htp-step-desc">Each stage gives you 3 choices. Pick the safest response. Every risky choice adds Risk Points to your score.</div>
+            </div>
+          </div>
+          <div class="htp-step">
+            <div class="htp-step-num">4</div>
+            <div>
+              <div class="htp-step-title">Score System — Lower is Safer</div>
+              <div class="htp-step-desc">Risk Score: 0 = Perfect Defense. Max 8 = Full Breach. Score 5 or less to unlock the next level.</div>
+            </div>
+          </div>
+          <div class="htp-step">
+            <div class="htp-step-num">5</div>
+            <div>
+              <div class="htp-step-title">Unlock All 11 Levels</div>
+              <div class="htp-step-desc">Progress through Helpdesk, Finance, CEO scams, Bank OTP theft, Tech support scams and more. Each level teaches a real attack type.</div>
+            </div>
+          </div>
+        </div>
+        <div class="htp-ratings">
+          <div class="htp-ratings-title">Risk Score Ratings</div>
+          <div class="htp-rating-row"><span class="htp-dot" style="background:#4A9B7F"></span><strong>0 pts</strong> — Perfect Defense</div>
+          <div class="htp-rating-row"><span class="htp-dot" style="background:#E8A33D"></span><strong>1-2 pts</strong> — Cautious</div>
+          <div class="htp-rating-row"><span class="htp-dot" style="background:#D98A3D"></span><strong>3-5 pts</strong> — Compromised</div>
+          <div class="htp-rating-row"><span class="htp-dot" style="background:#E8664A"></span><strong>6-8 pts</strong> — Full Breach</div>
+        </div>
+        <div class="htp-tips">
+          <div class="htp-ratings-title">Golden Rules</div>
+          <div class="htp-tip-item">Never share passwords, codes or bank details on an unverified inbound call</div>
+          <div class="htp-tip-item">Always call back on a number you already know</div>
+          <div class="htp-tip-item">Urgency is a manipulation tactic — slow down and verify first</div>
+          <div class="htp-tip-item">Legitimate staff follow proper procedures and never ask you to bypass security</div>
+        </div>
+      </div>
+      <div class="htp-footer">
+        <button class="lobby-start-btn" id="htpStartGame" type="button" style="width:100%;justify-content:center;">
+          <span class="lobby-start-icon">&#9654;</span>
+          <span><span class="lobby-start-label">Ready — Start Game</span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden compat elements -->
+  <div id="adminPanel" class="admin-panel" hidden><div id="userList" class="user-list"></div></div>
+  <div id="statsTitle" style="display:none;">Player statistics</div>
+
+</div>
+
+<div id="scene-container"></div>
+<div class="hud">
+  <div class="brand">
+    <div class="brand-mark">CA</div>
+    <div><div class="brand-text">CyberAwareness</div><div class="brand-sub">360° Call Centre Pod</div></div>
+  </div>
+  <div class="hud-actions">
+    <span class="session-status"><span class="status-dot"></span><span id="sessionStatus">STANDBY</span></span>
+    <button class="hud-office-btn" id="officeViewHudBtn" type="button">360&#176; Office View</button>
+    <button class="hud-hint" id="hudHint" type="button">Drag to look around &#183; click the phone when it rings</button>
+    <!-- HUD History dropdown -->
+    <div class="hud-history-wrap" id="hudHistoryWrap">
+      <button class="hud-history-btn" id="hudHistoryBtn" type="button">&#128203; History</button>
+      <div class="hud-history-panel" id="hudHistoryPanel">
+        <div class="hud-history-title">Your Game History</div>
+        <div id="hudHistoryList" class="hud-history-list">
+          <div class="hud-history-empty">No games played yet.</div>
+        </div>
+        <button class="hud-history-clear" id="hudHistoryClear" type="button">Clear History</button>
+      </div>
+    </div>
+  </div>
+</div>
+<button class="floating-office-btn" id="floatingOfficeBtn" type="button">Office 360°</button>
+<div class="ring-banner" id="ringBanner" role="button" tabindex="0" aria-label="Answer incoming call"><span class="ring-dot"></span> Incoming call — click the phone to answer</div>
+<div class="overlay" id="menuOverlay">
+  <div class="overlay-backdrop"></div>
+  <div class="overlay-panel">
+    <div class="menu-heading"><div><div class="eyebrow">TRAINING CONSOLE / INBOUND QUEUE</div><h1 class="overlay-title">Choose a pretext scenario</h1></div><div class="menu-stats"><strong id="callsCompleted">0</strong><span>calls completed</span></div></div>
+    <p class="overlay-sub">Each caller targets a different department and uses a different angle of pressure. Pick one to answer the call — every choice is logged to your Risk Ledger in real time.</p>
+    <div class="how-to-play"><div class="how-step"><b>1</b><span>Read the caller's story</span></div><div class="how-step"><b>2</b><span>Spot the warning signs</span></div><div class="how-step"><b>3</b><span>Choose the safest reply</span></div></div>
+    <div class="menu-toolbar"><label for="difficultySelect">Game mode</label><select id="difficultySelect"><option value="standard">Standard</option><option value="practice">Practice</option><option value="expert">Expert</option></select><span id="modeDescription">Normal scoring and pacing</span></div>
+    <div class="menu-grid" id="menuGrid"></div>
+    <div class="plain-tip"><strong>Quick rule:</strong> Never trust an unexpected request. Stop, check who is asking, and use a phone number or website you already know.</div>
+  </div>
+</div>
+<div class="overlay" id="callOverlay">
+  <div class="overlay-backdrop"></div>
+  <div class="overlay-panel" style="max-width:560px;">
+    <div class="call-panel" id="gameView">
+      <div class="call-header">
+        <div class="caller-avatar" id="callerAvatar">?</div>
+        <div class="caller-info"><div class="caller-name" id="callerName">Unknown Caller</div><div class="caller-meta" id="callerMeta">spoofed caller ID</div></div>
+        <div class="call-tools"><button class="icon-btn" id="pauseBtn" type="button" title="Pause call" aria-label="Pause call">Ⅱ</button><button class="icon-btn" id="muteBtn" type="button" title="Mute feedback sounds" aria-label="Mute feedback sounds">♫</button><div class="call-timer" id="callTimer">00:00</div></div>
+      </div>
+      <div class="mission-strip"><div><span class="mission-label">YOUR MISSION</span><strong id="missionText">Keep the account safe</strong></div><div class="threat-chip" id="threatChip">THREAT: UNKNOWN</div></div>
+      <div class="stage-strip" id="stageStrip"></div>
+      <div class="call-progress"><span id="progressLabel">Stage 1 of 3</span><div class="progress-track"><div id="progressBar"></div></div><button class="text-btn" id="dashboardBtn" type="button">Dashboard</button><button class="text-btn" id="exitCallBtn" type="button">Quit game</button></div>
+      <div class="transcript" id="transcript"></div>
+      <div class="options" id="options"></div>
+      <div class="ledger-strip"><div><div class="ledger-label">Risk Ledger</div><div class="ledger-score" id="scoreVal">0</div></div><div class="ledger-band band-perfect" id="bandTag">Perfect Defense</div></div>
+    </div>
+    <div id="endScreen" style="display:none;">
+      <div class="end-card">
+        <div class="end-eyebrow">Call ended · after-action report</div><div class="end-band" id="endBand">—</div><div class="end-score" id="endScore">Final Risk Ledger score: —</div>
+        <div class="score-grid"><div class="score-card score-card-good"><span>Risk Score</span><strong id="playerScore">0 / 8</strong><small>lower is safer · max 8</small></div><div class="score-card score-card-risk"><span>Risk Points</span><strong id="lossScore">0</strong><small>points exposed</small></div><div class="score-card"><span>Decisions</span><strong id="decisionScore">0 / 5</strong><small>safe responses</small></div></div>
+        <div class="end-impact" id="endImpact"></div><div class="lesson-box"><span class="end-section-label">Key lesson</span><strong id="keyLesson">Pause and verify before you act.</strong></div>
+        <div class="end-section-label">Call Timeline</div><div class="timeline" id="endTimeline"></div>
+        <div class="end-actions"><button class="btn btn-primary" id="replayBtn" type="button">Run this call again</button><button class="btn btn-secondary" id="hangupBtn" type="button">Back to the pod</button></div>
+
+        <!-- Score History -->
+        <div class="score-history-section">
+          <div class="score-history-header">
+            <span class="end-section-label" style="margin-bottom:0;">📋 Your Score History</span>
+            <button onclick="localStorage.removeItem('ca_score_history');renderScoreHistory();" style="background:none;border:none;color:#7C8794;font-size:10px;cursor:pointer;text-decoration:underline;">Clear</button>
+          </div>
+          <div id="scoreHistoryList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<button class="orientation-toggle" id="orientationToggle" type="button" title="Reset camera view" aria-label="Reset camera view">⟳</button>
+<div class="hotspot-tooltip" id="hotspotTooltip"></div>
+
+<!-- Achievement Toasts -->
+<div id="achievementToast"></div>
+
+<!-- Leaderboard Panel -->
+<div id="leaderboardPanel">
+  <div class="lb-title">Top Players</div>
+  <div id="lbList"><div class="lb-empty">Loading...</div></div>
+</div>
+
+<!-- Minimap -->
+<div id="minimap">
+  <canvas id="minimapCanvas" width="90" height="90"></canvas>
+</div>
+
+<!-- Stats HUD (bottom center) -->
+<div id="statsHud">
+  <div class="stats-hud-item">
+    <span class="stats-hud-val" id="hudGames">0</span>
+    <span class="stats-hud-lbl">Games</span>
+  </div>
+  <div class="stats-hud-item">
+    <span class="stats-hud-val green" id="hudBest">—</span>
+    <span class="stats-hud-lbl">Best</span>
+  </div>
+  <div class="stats-hud-item">
+    <span class="stats-hud-val amber" id="hudStreak">0</span>
+    <span class="stats-hud-lbl">Streak</span>
+  </div>
+  <div class="stats-hud-item">
+    <span class="stats-hud-val" id="hudAvg">—</span>
+    <span class="stats-hud-lbl">Avg</span>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
+
